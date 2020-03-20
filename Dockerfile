@@ -1,6 +1,6 @@
 FROM continuumio/miniconda
 #ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get install -f --quiet -y python3.8 python3-pip unzip firefox wget npm nodejs  \
+RUN apt-get update && apt-get install -f --quiet -y python3-pip unzip firefox wget npm nodejs  \
     openjdk-8-jdk libgconf2-4 libnss3 libxss1 libappindicator1 libindicator7 xdg-utils
 # android-sdk android-sdk-platform-23    
 RUN wget --no-verbose https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
