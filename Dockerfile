@@ -31,7 +31,7 @@ RUN pip3 install allure-robotframework robotframework robotframework-extendedreq
 #    ln -fs /opt/geckodriver /usr/local/bin/geckodriver
 #RUN wget -O android_sdk_setup.sh https://raw.githubusercontent.com/MoshDev/AutoFramer/master/android_sdk_setup.sh &&  bash android_sdk_setup.sh --full
 #RUN wget --no-verbose https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/zaproxy_2.9.0-1_all.deb && dpkg --install zaproxy_2.9.0-1_all.deb; apt-get --fix-broken --assume-yes install
-RUN  conda install -c auto bit.recipe.android_sdk 
+RUN  conda install -c conda-forge firefox geckodriver python-chromedriver-binary 
 RUN java -version 
 RUN adb --version
 RUN conda --version
