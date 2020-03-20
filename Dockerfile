@@ -25,14 +25,12 @@ RUN wget --no-verbose https://github.com/zaproxy/zaproxy/releases/download/v2.9.
 # Download and untar Android SDK tools
 RUN mkdir -p /usr/local/android-sdk-linux && \
     wget --no-verbose https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O tools.zip && \
-    unzip tools.zip -d /usr/local/android-sdk-linux && \
+    unzip -qq tools.zip -d /usr/local/android-sdk-linux && \
     rm tools.zip
 
 # Set environment variable
 ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV PATH ${ANDROID_HOME}/tools:$ANDROID_HOME/platform-tools:$PATH
-
-RUN export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
 
 # Make license agreement
 RUN mkdir $ANDROID_HOME/licenses && \
