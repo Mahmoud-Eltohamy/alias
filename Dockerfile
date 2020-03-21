@@ -12,7 +12,9 @@ RUN wget \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm -f Miniconda3-latest-Linux-x86_64.sh 
 
-RUN conda create --name myenv --yes && Conda activate myenv
+RUN conda create --name myenv --yes 
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
 RUN  conda install -c conda-forge firefox geckodriver python-chromedriver-binary 
 
 #RUN wget --no-verbose https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
