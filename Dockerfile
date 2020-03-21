@@ -12,6 +12,8 @@ RUN wget \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm -f Miniconda3-latest-Linux-x86_64.sh 
 
+RUN conda create --name myenv --yes && Conda activate myenv
+RUN  conda install -c conda-forge firefox geckodriver python-chromedriver-binary 
 
 #RUN wget --no-verbose https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 #RUN dpkg --install google-chrome-stable_current_amd64.deb; apt-get --fix-broken --assume-yes install
@@ -57,11 +59,6 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" && \
     $ANDROID_HOME/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 
 
-RUN java -version 
-RUN adb --version 
-
-
-RUN  conda install -c conda-forge firefox geckodriver python-chromedriver-binary 
 RUN java -version 
 RUN adb --version
 RUN conda --version
