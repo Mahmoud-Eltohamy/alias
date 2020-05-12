@@ -1,68 +1,143 @@
-FROM ubuntu:latest
-ENV DEBIAN_FRONTEND noninteractive
-ENV PATH="/root/miniconda3/bin:${PATH}"
-ARG PATH="/root/miniconda3/bin:${PATH}"
+FROM ubuntu:18.04
+LABEL maintainer "Mahmoud Eltohamy <mahmoud.mohammed.elhady@gmail.com>"
+ENV DEBIAN_FRONTEND=noninteractive
 
+#=============
+# Set WORKDIR
+#=============
+WORKDIR /root
 
-RUN add-apt-repository ppa:qameta/allure
-RUN apt-get update && apt-get install -f --quiet -y python3-pip unzip firefox wget npm nodejs  allure\
-    openjdk-8-jdk libgconf2-4 libnss3 libxss1 libappindicator1 libindicator7 xdg-utils  
+#==================
+# General Packages
+#------------------
+# openjdk-8-jdk
+#   Java
+# ca-certificates
+#   SSL client
+# tzdata
+#   Timezone
+# zip
+#   Make a zip file
+# unzip
+#   Unzip zip file
+# curl
+#   Transfer data from or to a server
+# wget
+#   Network downloader
+# libqt5webkit5
+#   Web content engine (Fix issue in Android)
+# libgconf-2-4
+#   Required package for chrome and chromedriver to run on Linux
+# xvfb
+#   X virtual framebuffer
+# gnupg
+#   Encryption software. It is needed for nodejs
+# salt-minion
+#   Infrastructure management (client-side)
+# gcc g++ 
+#   node and python dependancies
+# python 
+#   flask server and robotframework dependancies
+# git 
+#   version control
+#==================
+RUN apt-get -qqy update && \
 
-RUN wget \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && mkdir /root/.conda \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \
-    && rm -f Miniconda3-latest-Linux-x86_64.sh 
+    apt-get -qqy --no-install-recommends install \
+    openjdk-8-jdk \
+    ca-certificates \
+    tzdata \
+    zip \
+    unzip \
+    curl \
+    wget \
+    libqt5webkit5 \
+    libgconf-2-4 \
+    apt-utils \
+    xvfb \
+    gnupg \
+    sudo \
+    gcc \
+    g++ \
+    make \
+    git \
+    salt-minion \
+    python3 \
+    python3-dev \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN conda create --name myenv --yes 
-# Make RUN commands use the new environment:
-SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
-RUN  conda install -c conda-forge firefox geckodriver python-chromedriver-binary 
+#===============
+# Set JAVA_HOME
+#===============
+ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre" \
+    PATH=$PATH:$JAVA_HOME/bin
 
-#RUN wget --no-verbose https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-#RUN dpkg --install google-chrome-stable_current_amd64.deb; apt-get --fix-broken --assume-yes install
-RUN pip3 install allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
-    robotframework-jsonlibrary robotframework-jsonvalidator robotframework-pabot robotframework-randomlibrary \
-    robotframework-requests robotframework-screencaplibrary robotframework-seleniumlibrary robotframework-databaselibrary \
-    RESTinstance robotframework-pabot locustio python-owasp-zap-v2.4 sqlmap jupyterhub dbbot
-#RUN CHROMEDRIVER_VERSION=`wget --no-verbose --output-document - https://chromedriver.storage.googleapis.com/LATEST_RELEASE` && \
-#    wget --no-verbose --output-document /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip && \
-#    unzip -qq /tmp/chromedriver_linux64.zip -d /opt/chromedriver && \
-#    chmod +x /opt/chromedriver/chromedriver && \
-#    ln -fs /opt/chromedriver/chromedriver /usr/local/bin/chromedriver
-#RUN GECKODRIVER_VERSION=`wget --no-verbose --output-document - https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep tag_name | cut -d '"' -f 4` && \
-#    wget --no-verbose --output-document /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
-#    tar --directory /opt -zxf /tmp/geckodriver.tar.gz && \
-#    chmod +x /opt/geckodriver && \
-#    ln -fs /opt/geckodriver /usr/local/bin/geckodriver
-#RUN wget -O android_sdk_setup.sh https://raw.githubusercontent.com/MoshDev/AutoFramer/master/android_sdk_setup.sh &&  bash android_sdk_setup.sh --full
-#RUN wget --no-verbose https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/zaproxy_2.9.0-1_all.deb && dpkg --install zaproxy_2.9.0-1_all.deb; apt-get --fix-broken --assume-yes install
-# Download and untar Android SDK tools
-RUN mkdir -p /usr/local/android-sdk-linux && \
-    wget --no-verbose https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip -O tools.zip && \
-    unzip tools.zip -d /usr/local/android-sdk-linux && \
-    rm tools.zip
+#=====================
+# Install Android SDK
+#=====================
+ARG SDK_VERSION=sdk-tools-linux-3859397
+ARG ANDROID_BUILD_TOOLS_VERSION=26.0.0
+ARG ANDROID_PLATFORM_VERSION="android-25"
 
-# Set environment variable
-ENV ANDROID_HOME /usr/local/android-sdk-linux
-ENV PATH ${ANDROID_HOME}/tools:$ANDROID_HOME/platform-tools:$PATH
+ENV SDK_VERSION=$SDK_VERSION \
+    ANDROID_BUILD_TOOLS_VERSION=$ANDROID_BUILD_TOOLS_VERSION \
+    ANDROID_HOME=/root
 
-RUN export JAVA_OPTS='-XX:+IgnoreUnrecognizedVMOptions --add-modules java.se.ee'
+RUN wget -O tools.zip https://dl.google.com/android/repository/${SDK_VERSION}.zip && \
 
-# Make license agreement
-RUN mkdir $ANDROID_HOME/licenses && \
-    echo 8933bad161af4178b1185d1a37fbf41ea5269c55 > $ANDROID_HOME/licenses/android-sdk-license && \
-    echo d56f5187479451eabf01fb78af6dfcb131a6481e >> $ANDROID_HOME/licenses/android-sdk-license && \
-    echo 24333f8a63b6825ea9c5514f83c2829b004d1fee >> $ANDROID_HOME/licenses/android-sdk-license && \
-    echo 84831b9409646a918e30573bab4c9c91346d8abd > $ANDROID_HOME/licenses/android-sdk-preview-license
+    unzip tools.zip && rm tools.zip && \
+    chmod a+x -R $ANDROID_HOME && \
+    chown -R root:root $ANDROID_HOME
 
-# Update and install using sdkmanager
-RUN $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" && \
-    $ANDROID_HOME/tools/bin/sdkmanager "build-tools;28.0.3" "build-tools;27.0.3" && \
-    $ANDROID_HOME/tools/bin/sdkmanager "platforms;android-28" "platforms;android-27" && \
-    $ANDROID_HOME/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
+ENV PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin
 
+RUN mkdir -p ~/.android && \
 
-RUN java -version 
-RUN adb --version
-RUN conda --version
+    touch ~/.android/repositories.cfg && \
+    echo y | sdkmanager "platform-tools" && \
+    echo y | sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION" && \
+    echo y | sdkmanager "platforms;$ANDROID_PLATFORM_VERSION"
+
+ENV PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools
+
+#====================================
+# Install latest nodejs, npm, appium
+#====================================
+RUN  curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
+
+     apt-get install -y nodejs && \
+     apt-get autoremove --purge -y && \
+     sudo npm install -g --unsafe-perm=true --allow-root appium && \
+     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
+#====================================
+# Install robotframework and other python requirements
+#====================================
+RUN pip3 install --upgrade setuptools && pip3 install six>=1.4.1 robotframework>=3.0.1 robotframework-appiumlibrary>=1.4.2 \
+
+    robotframework-requests>=0.4.5 numpy>=1.8.0rc1 sounddevice>=0.3.12 SoundFile>=0.10.2 SpeechRecognition>=3.8.1
+
+#================================
+# APPIUM Test Distribution (ATD)
+#================================
+ARG ATD_VERSION=1.2
+ENV ATD_VERSION=$ATD_VERSION
+RUN wget -nv -O RemoteAppiumManager.jar "https://github.com/AppiumTestDistribution/ATD-Remote/releases/download/${ATD_VERSION}/RemoteAppiumManager-${ATD_VERSION}.jar"
+
+#==================================
+# Fix Issue with timezone mismatch
+#==================================
+ENV TZ="US/Pacific"
+RUN echo "${TZ}" > /etc/timezone
+
+#===============
+# Expose Ports
+#---------------
+# 4723
+#   Appium port
+# 4567
+#   ATD port
+#===============
+EXPOSE 4723
+EXPOSE 4567
