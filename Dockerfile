@@ -66,5 +66,3 @@ RUN $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" && \
 RUN java -version 
 RUN adb --version
 RUN conda --version
-
-#RUN sdkmanager --no_https --list
