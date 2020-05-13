@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM ubuntu:latest
 LABEL maintainer "Mahmoud Eltohamy <mahmoud.mohammed.elhady@gmail.com>"
 ENV DEBIAN_FRONTEND=noninteractive
 
