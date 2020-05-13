@@ -1,143 +1,17 @@
-FROM ubuntu:18.04
-LABEL maintainer "Mahmoud Eltohamy <mahmoud.mohammed.elhady@gmail.com>"
-ENV DEBIAN_FRONTEND=noninteractive
+FROM alpine:3.2
 
-#=============
-# Set WORKDIR
-#=============
-WORKDIR /root
+# Installs Android SDK
+ENV ANDROID_SDK_FILENAME android-sdk_r23.0.2-linux.tgz
+ENV ANDROID_SDK_URL http://dl.google.com/android/${ANDROID_SDK_FILENAME}
+ENV ANDROID_API_LEVELS android-15,android-16,android-17,android-18,android-19,android-20,android-21 
+ENV ANDROID_BUILD_TOOLS_VERSION 21.1.0
+ENV ANDROID_HOME /opt/android-sdk-linux
+ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 
-#==================
-# General Packages
-#------------------
-# openjdk-8-jdk
-#   Java
-# ca-certificates
-#   SSL client
-# tzdata
-#   Timezone
-# zip
-#   Make a zip file
-# unzip
-#   Unzip zip file
-# curl
-#   Transfer data from or to a server
-# wget
-#   Network downloader
-# libqt5webkit5
-#   Web content engine (Fix issue in Android)
-# libgconf-2-4
-#   Required package for chrome and chromedriver to run on Linux
-# xvfb
-#   X virtual framebuffer
-# gnupg
-#   Encryption software. It is needed for nodejs
-# salt-minion
-#   Infrastructure management (client-side)
-# gcc g++ 
-#   node and python dependancies
-# python 
-#   flask server and robotframework dependancies
-# git 
-#   version control
-#==================
-RUN apt-get -qqy update && \
-
-    apt-get -qqy --no-install-recommends install \
-    openjdk-8-jdk \
-    ca-certificates \
-    tzdata \
-    zip \
-    unzip \
-    curl \
-    wget \
-    libqt5webkit5 \
-    libgconf-2-4 \
-    apt-utils \
-    xvfb \
-    gnupg \
-    sudo \
-    gcc \
-    g++ \
-    make \
-    git \
-    salt-minion \
-    python3 \
-    python3-dev \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
-#===============
-# Set JAVA_HOME
-#===============
-ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre" \
-    PATH=$PATH:$JAVA_HOME/bin
-
-#=====================
-# Install Android SDK
-#=====================
-ARG SDK_VERSION=sdk-tools-linux-3859397
-ARG ANDROID_BUILD_TOOLS_VERSION=26.0.0
-ARG ANDROID_PLATFORM_VERSION="android-25"
-
-ENV SDK_VERSION=$SDK_VERSION \
-    ANDROID_BUILD_TOOLS_VERSION=$ANDROID_BUILD_TOOLS_VERSION \
-    ANDROID_HOME=/root
-
-RUN wget -O tools.zip https://dl.google.com/android/repository/${SDK_VERSION}.zip && \
-
-    unzip tools.zip && rm tools.zip && \
-    chmod a+x -R $ANDROID_HOME && \
-    chown -R root:root $ANDROID_HOME
-
-ENV PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin
-
-RUN mkdir -p ~/.android && \
-
-    touch ~/.android/repositories.cfg && \
-    echo y | sdkmanager "platform-tools" && \
-    echo y | sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION" && \
-    echo y | sdkmanager "platforms;$ANDROID_PLATFORM_VERSION"
-
-ENV PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools
-
-#====================================
-# Install latest nodejs, npm, appium
-#====================================
-RUN  curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
-
-     apt-get install -y nodejs && \
-     apt-get autoremove --purge -y && \
-     sudo npm install -g --unsafe-perm=true --allow-root appium && \
-     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
-
-#====================================
-# Install robotframework and other python requirements
-#====================================
-RUN pip3 install --upgrade setuptools && pip3 install six>=1.4.1 robotframework>=3.0.1 robotframework-appiumlibrary>=1.4.2 \
-
-    robotframework-requests>=0.4.5 numpy>=1.8.0rc1 sounddevice>=0.3.12 SoundFile>=0.10.2 SpeechRecognition>=3.8.1
-
-#================================
-# APPIUM Test Distribution (ATD)
-#================================
-ARG ATD_VERSION=1.2
-ENV ATD_VERSION=$ATD_VERSION
-RUN wget -nv -O RemoteAppiumManager.jar "https://github.com/AppiumTestDistribution/ATD-Remote/releases/download/${ATD_VERSION}/RemoteAppiumManager-${ATD_VERSION}.jar"
-
-#==================================
-# Fix Issue with timezone mismatch
-#==================================
-ENV TZ="US/Pacific"
-RUN echo "${TZ}" > /etc/timezone
-
-#===============
-# Expose Ports
-#---------------
-# 4723
-#   Appium port
-# 4567
-#   ATD port
-#===============
-EXPOSE 4723
-EXPOSE 4567
+RUN apk update && apk add openjdk7 bash && \
+    mkdir /opt && cd /opt && \
+    wget -q ${ANDROID_SDK_URL} && \
+    tar -xzf ${ANDROID_SDK_FILENAME} && \
+    rm ${ANDROID_SDK_FILENAME} && \
+    echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION} --no-https && \
+    rm /var/cache/apk/*    
