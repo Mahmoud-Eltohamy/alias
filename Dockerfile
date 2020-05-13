@@ -1,4 +1,5 @@
 FROM python:3.8-alpine
+#RUN apk --update add gcc build-base freetype-dev libpng-dev openblas-dev
 
 # Installs Android SDK
 ENV ANDROID_SDK_FILENAME android-sdk_r26.0.2-linux.tgz
@@ -16,7 +17,7 @@ RUN apk update && apk add openjdk7 bash && \
     echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION} --no-https && \
     rm /var/cache/apk/*    
 
-RUN pip3 install allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
+RUN pip install allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
     robotframework-jsonlibrary robotframework-jsonvalidator robotframework-pabot robotframework-randomlibrary \
     robotframework-requests robotframework-screencaplibrary robotframework-seleniumlibrary robotframework-databaselibrary \
     RESTinstance robotframework-pabot
