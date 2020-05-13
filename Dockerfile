@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM python:3.6-alpine
 # Installs Android SDK
 ENV ANDROID_SDK_FILENAME android-sdk_r26.0.2-linux.tgz
 ENV ANDROID_SDK_URL http://dl.google.com/android/${ANDROID_SDK_FILENAME}
@@ -43,9 +43,6 @@ RUN apk -U --no-cache add curl git make gcc g++ python linux-headers paxctl libg
     /usr/lib/node_modules/npm/doc \
     /usr/lib/node_modules/npm/html \
     /usr/share/man
-
-CMD ["node", "-v"]
-
 ###############################################################
 
 RUN apk update && apk --no-cache add openjdk7 bash && \
@@ -56,11 +53,7 @@ RUN apk update && apk --no-cache add openjdk7 bash && \
     echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION} --no-https && \
     rm /var/cache/apk/*    
 
-RUN pip install allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
+RUN RUN pip install --no-cache-dir allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
     robotframework-jsonlibrary robotframework-jsonvalidator robotframework-pabot robotframework-randomlibrary \
     robotframework-requests robotframework-seleniumlibrary robotframework-databaselibrary \
     RESTinstance robotframework-pabot
-
-CMD ["node", "-v"]
-CMD ["adb", "devices"]
-CMD ["python", "-V"]
