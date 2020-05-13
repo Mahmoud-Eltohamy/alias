@@ -15,3 +15,4 @@ RUN apk update && apk add openjdk7 bash && \
     rm ${ANDROID_SDK_FILENAME} && \
     echo y | android update sdk --no-ui -a --filter tools,platform-tools,${ANDROID_API_LEVELS},build-tools-${ANDROID_BUILD_TOOLS_VERSION} --no-https && \
     rm /var/cache/apk/*    
+RUN adb devices
