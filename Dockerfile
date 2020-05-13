@@ -2,7 +2,7 @@ FROM python:3.8-alpine
 # Installs Android SDK
 ENV ANDROID_SDK_FILENAME android-sdk_r26.0.2-linux.tgz
 ENV ANDROID_SDK_URL http://dl.google.com/android/${ANDROID_SDK_FILENAME}
-ENV ANDROID_API_LEVELS android-20,android-21,android-27,android-29 
+ENV ANDROID_API_LEVELS android-29 
 ENV ANDROID_BUILD_TOOLS_VERSION 21.1.0
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
