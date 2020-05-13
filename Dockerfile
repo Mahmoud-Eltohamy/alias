@@ -19,5 +19,5 @@ RUN apk update && apk add openjdk7 bash && \
 
 RUN pip install allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
     robotframework-jsonlibrary robotframework-jsonvalidator robotframework-pabot robotframework-randomlibrary \
-    robotframework-requests robotframework-screencaplibrary robotframework-seleniumlibrary robotframework-databaselibrary \
+    robotframework-requests robotframework-seleniumlibrary robotframework-databaselibrary \
     RESTinstance robotframework-pabot
