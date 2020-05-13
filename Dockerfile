@@ -12,7 +12,7 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 ARG NODE_VER=8.11.3
 ARG NPM_VER=5
 
-RUN apk -U add curl git make gcc g++ python linux-headers paxctl libgcc libstdc++ binutils-gold ca-certificates \
+RUN apk -U --no-cache add curl git make gcc g++ python linux-headers paxctl libgcc libstdc++ binutils-gold ca-certificates \
  && cd /tmp \
  && curl --silent --ssl https://nodejs.org/dist/v$NODE_VER/node-v$NODE_VER.tar.gz | tar zxf - \
  && cd node-v$NODE_VER \
@@ -48,7 +48,7 @@ CMD ["node", "-v"]
 
 ###############################################################
 
-RUN apk update && apk add openjdk7 bash && \
+RUN apk update && apk --no-cache add openjdk7 bash && \
     mkdir /opt ; exit 0 && cd /opt && \
     wget -q ${ANDROID_SDK_URL} && \
     tar -xzf ${ANDROID_SDK_FILENAME} && \
