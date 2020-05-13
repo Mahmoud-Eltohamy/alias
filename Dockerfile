@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM python:3.11-alpine
 
 # Installs Android SDK
 ENV ANDROID_SDK_FILENAME android-sdk_r26.0.2-linux.tgz
