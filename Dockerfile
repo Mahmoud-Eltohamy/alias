@@ -61,9 +61,9 @@ RUN apt-get -qqy update && \
     make \
     git \
     salt-minion \
-#    python3 \
-#    python3-dev \
-#    python3-pip \
+    python3 \
+    python3-dev \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 #===============
