@@ -49,14 +49,6 @@ RUN apk -U --no-cache add curl git make gcc g++ python linux-headers paxctl libg
     /usr/lib/node_modules/npm/doc \
     /usr/lib/node_modules/npm/html \
     /usr/share/man
-#====================================
-# Install latest nodejs, npm, appium
-#====================================
-ARG APPIUM_VERSION=1.7.0-beta
-ENV APPIUM_VERSION=$APPIUM_VERSION
-
-RUN npm install -g appium@${APPIUM_VERSION} --unsafe-perm=true --allow-root && \
-    exit 0 
 ###############################################################
 FROM base
 RUN pip install --no-cache-dir allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
