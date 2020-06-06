@@ -56,12 +56,7 @@ ARG APPIUM_VERSION=1.7.0-beta
 ENV APPIUM_VERSION=$APPIUM_VERSION
 
 RUN npm install -g appium@${APPIUM_VERSION} --unsafe-perm=true --allow-root && \
-    exit 0 && \
-    npm cache clean && \
-    apt-get remove --purge -y npm && \
-    apt-get autoremove --purge -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    apt-get clean
+    exit 0 
 ###############################################################
 FROM base
 RUN pip install --no-cache-dir allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
