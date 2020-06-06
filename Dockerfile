@@ -49,6 +49,22 @@ RUN apk -U --no-cache add curl git make gcc g++ python linux-headers paxctl libg
     /usr/lib/node_modules/npm/doc \
     /usr/lib/node_modules/npm/html \
     /usr/share/man
+#====================================
+# Install latest nodejs, npm, appium
+# Using this workaround to install Appium -> https://github.com/appium/appium/issues/10020 -> Please remove this workaround asap
+#====================================
+ARG APPIUM_VERSION=1.7.0-beta
+ENV APPIUM_VERSION=$APPIUM_VERSION
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash && \
+    apt-get -qqy install nodejs && \
+    npm install -g appium@${APPIUM_VERSION} --unsafe-perm=true --allow-root && \
+    exit 0 && \
+    npm cache clean && \
+    apt-get remove --purge -y npm && \
+    apt-get autoremove --purge -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get clean  
 ###############################################################
 FROM base
 RUN pip install --no-cache-dir allure-robotframework robotframework robotframework-extendedrequestslibrary robotframework-faker \
